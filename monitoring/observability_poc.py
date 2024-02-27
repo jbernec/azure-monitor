@@ -40,6 +40,7 @@
 
 # COMMAND ----------
 
+# DBTITLE 1,Configure ADLS Gen 2 Access
 # Permission is based on File or folder based ACL assignments to the Data Lake filesystem (container) . RBAC assignments to the top level Azure Data Lake resource is not required.
 # https://docs.databricks.com/storage/azure-storage.html
 spark.conf.set("fs.azure.account.auth.type.stor0406ch.dfs.core.windows.net", "OAuth")
@@ -50,6 +51,7 @@ spark.conf.set("fs.azure.account.oauth2.client.endpoint.stor0406ch.dfs.core.wind
 
 # COMMAND ----------
 
+# DBTITLE 1,Import Required Packages
 # https://realpython.com/python-logging/
 # https://opentelemetry.io/docs/instrumentation/python/
 # https://betterstack.com/community/guides/logging/how-to-start-logging-with-python/
@@ -62,6 +64,7 @@ from pyspark.sql.session import SparkSession
 from pyspark.sql import DataFrame
 import azure.identity
 from azure.identity import DefaultAzureCredential
+from azure.identity import ClientSecretCredential
 from azure.monitor.ingestion import LogsIngestionClient
 from azure.core.exceptions import HttpResponseError
 from opentelemetry._logs import (
@@ -75,9 +78,20 @@ from opentelemetry.sdk._logs import (
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from azure.monitor.opentelemetry.exporter import AzureMonitorLogExporter
 
+# COMMAND ----------
+
+# DBTITLE 1,Set Client Secret Credential
+tenant_id=dbutils.secrets.get(scope="myscope", key="tenantid")
+client_id = dbutils.secrets.get(scope="myscope", key="clientid")
+client_secret = dbutils.secrets.get(scope="myscope", key="clientsecret")
+credential = azure.identity.ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
+
+# COMMAND ----------
+
+# DBTITLE 1,Configure OTLP Logger Components
 set_logger_provider(LoggerProvider())
 exporter = AzureMonitorLogExporter.from_connection_string(
-    dbutils.secrets.get("myscope", key="appinsightsconnstr")
+    dbutils.secrets.get("myscope", key="appinsightsconnstr"), credential=credential
 )
 get_logger_provider().add_log_record_processor(BatchLogRecordProcessor(exporter))
 
@@ -152,12 +166,8 @@ except Exception as e:
 # COMMAND ----------
 
 df_json.display()
-num_rows = df_json.count()
-print(num_rows)
-
-# COMMAND ----------
-
-help(azure.identity.ClientSecretCredential)
+record_count = df_json.count()
+print(record_count)
 
 # COMMAND ----------
 
@@ -167,10 +177,6 @@ dcr_immutableid = "dcr-bc9e64eba16345518a890476255b6827" # immutableId property 
 stream_name = "Custom-ApacheSparkLogs_CL" # name of the stream in the DCR that represents the destination table
 
 # credential = DefaultAzureCredential()
-tenant_id=dbutils.secrets.get(scope="myscope", key="tenantid")
-client_id = dbutils.secrets.get(scope="myscope", key="clientid")
-client_secret = dbutils.secrets.get(scope="myscope", key="clientsecret")
-credential = azure.identity.ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
 client = LogsIngestionClient(endpoint=dce_endpoint, credential=credential, logging_enable=True)
 
 # COMMAND ----------
@@ -181,7 +187,6 @@ print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 # datetime.now().strftime("%c")
 print(datetime.now())
 date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-num_rows = 1110
 
 # COMMAND ----------
 
@@ -191,8 +196,8 @@ log_body = [
   {
     "TimeGenerated": date_time,
     "Application": "otlp-logs-export",
-    "LastRecordsCount": num_rows,
-    "LastinputRowsPerSecond": 1400,
+    "LastRecordsCount": record_count,
+    "LastinputRowsPerSecond": 13,
     "RequiredClusterfeature": "photon_predictive_io"
   }
 ]
