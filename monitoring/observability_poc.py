@@ -329,3 +329,29 @@ except Exception as e:
 # COMMAND ----------
 
 streaming_query.lastProgress
+
+# COMMAND ----------
+
+# DBTITLE 1,Define helper functions
+# Define helper functions
+# https://notebooks.databricks.com/demos/auto-loader/index.html
+def start_stream_restart_on_schema_evolution():
+  while True:
+    try:
+      q = (spark.readStream
+                  .format("cloudFiles")
+                  .option("cloudFiles.format", "json")
+                  .option("cloudFiles.schemaLocation", f"{raw_data_location}/inferred_schema")
+                  .option("cloudFiles.inferColumnTypes", "true")
+                  .load(raw_data_location+"/user_json")
+                .writeStream
+                  .format("delta")
+                  .option("checkpointLocation", raw_data_location+"/checkpoint")
+                  .option("mergeSchema", "true")
+                  .table("autoloader_demo_output"))
+      q.awaitTermination()
+      return q
+    except BaseException as e:
+      #Adding a new column will trigger an UnknownFieldException. In this case we just restart the stream:
+      if not ('UnknownFieldException' in str(e.stackTrace)):
+        raise e
