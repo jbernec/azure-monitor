@@ -1,0 +1,26 @@
+[
+    {
+    "Time": "2023-03-12T15:04:48.423211Z",
+    "TimeGenerated": "",
+    "Computer": "Computer1",
+        "AdditionalContext": {
+            "InstanceName": "user1",
+            "TimeZone": "Pacific Time",
+            "Level": 4,
+            "CounterName": "AppMetric2",
+            "CounterValue": 35.3    
+        }
+    },
+    {
+        "Time": "2023-03-12T15:04:48.794972Z",
+        "TimeGenerated": "",
+        "Computer": "Computer2",
+        "AdditionalContext": {
+            "InstanceName": "user2",
+            "TimeZone": "Central Time",
+            "Level": 3,
+            "CounterName": "AppMetric2",
+            "CounterValue": 43.5     
+        }
+    }
+]
