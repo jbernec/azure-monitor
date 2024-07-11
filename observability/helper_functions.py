@@ -19,7 +19,7 @@ client_secret_creds = {
     "client_secret": dbutils.secrets.get(scope="scope", key="clientsecret")
 }
 
-def authenticate_azure_log_ingestion(client_secret_cred: dict = None, log_key: str =None, use_aad_for_log_ingestion: bool =False, use_client_id: bool=False):
+def authenticate_azure_log_ingestion(client_secret_cred: dict = None, use_client_id: bool=False, log_key: str =None, use_aad_for_log_ingestion: bool =False):
     if use_aad_for_log_ingestion:
         print("Using AAD for authentication.")
         credential = DefaultAzureCredential()
