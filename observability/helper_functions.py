@@ -13,6 +13,13 @@ from azure.identity import DefaultAzureCredential, ManagedIdentityCredential, En
 USE_AAD_FOR_LOG_INGESTION = True
 LOG_ANALYTICS_KEY = ""
 
+# Set credential variables
+client_secret_creds = {
+    "tenant_id": dbutils.secrets.get(scope="scope", key="tenant_id"),
+    "client_id": dbutils.secrets.get(scope="scope", key="client_id"),
+    "client_secret": dbutils.secrets.get(scope="scope", key="client_secret")
+}
+
 def authenticate_azure_log_ingestion(client_secret_cred: dict, log_key=None, use_aad_for_log_ingestion=False, use_client_id=False):
     if use_aad_for_log_ingestion:
         print("Using AAD for authentication.")
