@@ -1,6 +1,6 @@
 # azure-monitor-observability
 
-# import packages
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col
-from pyspark.sql.types import TimestampType
+azure-core==1.30.2
+azure-identity==1.17.1
+azure-monitor-ingestion==1.0.4
+azure-monitor-opentelemetry-exporter==1.0.0b27
