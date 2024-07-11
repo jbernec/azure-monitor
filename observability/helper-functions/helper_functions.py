@@ -32,3 +32,25 @@ def authenticate_azure_log_ingestion(client_secret_cred: dict = None, use_client
             raise ValueError("API key must be provided if not using AAD for authentication.")
         credential = AzureKeyCredential(log_key)
     return credential
+
+
+def authenticate_public_cloud():
+    # [START create_client_public_cloud]
+    from azure.identity import DefaultAzureCredential
+    from azure.monitor.ingestion import LogsIngestionClient
+
+    credential = DefaultAzureCredential()
+    endpoint = "https://example.ingest.monitor.azure.com"
+    client = LogsIngestionClient(endpoint, credential)
+    # [END create_client_public_cloud]
+
+
+def authenticate_sovereign_cloud():
+    # [START create_client_sovereign_cloud]
+    from azure.identity import AzureAuthorityHosts, DefaultAzureCredential
+    from azure.monitor.ingestion import LogsIngestionClient
+
+    credential = DefaultAzureCredential(authority=AzureAuthorityHosts.AZURE_GOVERNMENT)
+    endpoint = "https://example.ingest.monitor.azure.us"
+    client = LogsIngestionClient(endpoint, credential, credential_scopes=["https://monitor.azure.us/.default"])
+    # [END create_client_sovereign_cloud]
