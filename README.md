@@ -1,2 +1,2 @@
 ### Azure monitor observability solution components.
-##### Implemented using Opentelemetry to capture exceptions, logs and custom metrics. Published to Azure Log Analytics through Data Collection rules and endpoint configurations. The primary focus is the capture and publishing of custom Apache Spark application logs from Azure Databricks to Log Analytics.
+##### Used OpenTelemetry to capture and publish exceptions, logs and custom metrics. Sent them to Azure Log Analytics via Data Collection rules and endpoint settings. The main goal is sending custom Apache Spark application logs and custom metrics from Azure Databricks to Log Analytics.
