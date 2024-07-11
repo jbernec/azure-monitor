@@ -27,4 +27,4 @@ def authenticate_azure_log_ingestion(client_secret_cred: dict, log_key=None, use
         credential = AzureKeyCredential(log_key)
     return credential
 
-azure_log_analytics_credential = authenticate_azure_log_ingestion(log_key=LOG_ANALYTICS_KEY, use_aad_for_log_ingestion=USE_AAD_FOR_LOG_INGESTION)
+credential = authenticate_azure_log_ingestion(client_secret_cred=client_secret_creds, use_client_id=True)
