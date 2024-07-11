@@ -1,3 +1,14 @@
+from azure.identity import ClientSecretCredential
+import azure.identity
+from datetime import datetime
+import json
+import logging
+from azure.monitor.ingestion import LogsIngestionClient, LogsUploadError
+from azure.core.exceptions import HttpResponseError
+from azure.core.credentials import AzureKeyCredential
+from azure.identity import DefaultAzureCredential, ManagedIdentityCredential, EnvironmentCredential
+
+
 # set authentication method
 USE_AAD_FOR_LOG_INGESTION = True
 LOG_ANALYTICS_KEY = ""
